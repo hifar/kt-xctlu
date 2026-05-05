@@ -102,7 +102,7 @@ export class GameEngine {
     if (!this.running) return;
     this.animationFrameId = requestAnimationFrame(this.loop);
 
-    const delta = Math.min(this.clock.getDelta(), 0.1);
+    const delta = Math.min(this.clock.getDelta(), 0.1); // cap delta to prevent physics explosions during lag spikes
     const scene = this.sceneManager.getCurrentScene();
     if (scene) {
       for (const system of this.systems) {

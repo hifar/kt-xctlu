@@ -3,6 +3,7 @@ import { ModelLoader } from './ModelLoader';
 import type { SceneConfig, Vec3Config } from '../types';
 import type { GameEngine } from '../engine/GameEngine';
 import { NPC } from '../entities/NPC';
+import { InteractableObject } from '../entities/InteractableObject';
 import type { InteractableEntity } from '../types/entity';
 
 function applyVec3(obj: THREE.Object3D, pos: Vec3Config, rot: Vec3Config, scale: Vec3Config): void {
@@ -169,6 +170,27 @@ export class SceneLoader {
         }
         applyVec3(model, objConfig.position, objConfig.rotation, objConfig.scale);
         scene.add(model);
+
+        if (objConfig.interactable) {
+          const obj = new InteractableObject(
+            objConfig.id,
+            objConfig.name,
+            objConfig.interactRange ?? 2,
+            objConfig.interactMessage ?? `Interact with ${objConfig.name}`
+          );
+          // Link the visible model into the entity's Object3D
+          obj.object3D.position.copy(model.position);
+          obj.object3D.rotation.copy(model.rotation);
+          obj.object3D.scale.copy(model.scale);
+          // Replace stand-alone model with entity's object (which holds the model as child)
+          scene.remove(model);
+          obj.object3D.add(model);
+          model.position.set(0, 0, 0);
+          model.rotation.set(0, 0, 0);
+          model.scale.set(1, 1, 1);
+          scene.add(obj.object3D);
+          interactables.push(obj);
+        }
       } catch (e) {
         console.warn(`Failed to load object ${objConfig.name}:`, e);
       }

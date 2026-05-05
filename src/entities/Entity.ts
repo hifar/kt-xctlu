@@ -7,7 +7,7 @@ export abstract class Entity implements IEntity {
   object3D: THREE.Object3D;
   protected components: Map<string, IComponent> = new Map();
 
-  constructor(id: string | null, name: string) {
+  constructor(id: string | undefined, name: string) {
     this.id = id ?? Entity.generateId();
     this.name = name;
     this.object3D = new THREE.Group();

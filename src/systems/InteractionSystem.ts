@@ -77,8 +77,7 @@ export class InteractionSystem implements ISystem {
         this.isInteracting = true;
         closestEntity.onInteract(this.player);
       } else if (this.isInteracting) {
-        // End interaction
-        this.isInteracting = false;
+        // End interaction — INTERACTION_END listener resets isInteracting
         this.eventBus.emit('INTERACTION_END', {});
       }
     }

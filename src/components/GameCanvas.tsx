@@ -102,10 +102,8 @@ export const GameCanvas: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Get pixel dimensions from the parent element
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-
+    // GameEngine.init() calls renderer.setSize() which sets the canvas buffer size,
+    // so we do not set canvas.width/height manually here to avoid conflicts.
     const engine = GameEngine.getInstance();
     engineRef.current = engine;
     engine.init(canvas);
@@ -117,7 +115,7 @@ export const GameCanvas: React.FC = () => {
       if (disposed) return;
 
       const sceneLoader = new SceneLoader(engine);
-      const { scene, npcs } = await sceneLoader.loadScene(DEMO_SCENE_CONFIG);
+      const { scene, npcs, interactables } = await sceneLoader.loadScene(DEMO_SCENE_CONFIG);
 
       if (disposed) return;
 
@@ -140,11 +138,14 @@ export const GameCanvas: React.FC = () => {
       thirdPersonCam.setTarget(player.object3D);
       player.setThirdPersonCamera(thirdPersonCam);
 
-      // Setup interaction system
+      // Setup interaction system — register NPCs and interactable objects
       const interactionSystem = new InteractionSystem(engine.eventBus, engine.inputManager);
       interactionSystem.setPlayer(player);
       for (const npc of npcs) {
         interactionSystem.registerEntity(npc);
+      }
+      for (const obj of interactables) {
+        interactionSystem.registerEntity(obj);
       }
       engine.registerSystem(interactionSystem);
 
