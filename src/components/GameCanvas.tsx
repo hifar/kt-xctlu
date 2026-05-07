@@ -118,8 +118,6 @@ export const GameCanvas: React.FC = () => {
       const { scene, npcs, interactables } = await sceneLoader.loadScene(DEMO_SCENE_CONFIG);
 
       if (disposed) return;
-
-      // Create player
       const player = new Player('player_1', 'Player', engine.inputManager, engine.eventBus);
       player.object3D.position.set(
         DEMO_SCENE_CONFIG.playerSpawn.x,
@@ -163,7 +161,9 @@ export const GameCanvas: React.FC = () => {
       engine.start();
     }
 
-    setupScene().catch(console.error);
+    setupScene().catch((error) => {
+      console.error('[GameCanvas] Scene setup error:', error);
+    });
 
     return () => {
       disposed = true;

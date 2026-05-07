@@ -34,6 +34,22 @@ export const HUD: React.FC<HUDProps> = ({ eventBus }) => {
     message: 'Loading...',
   });
 
+  // 安全保障：3秒后如果loading仍然显示，强制隐藏
+  // 这是一个备份方案，以防止eventBus事件不被接收
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev.visible) {
+          console.log('[HUD] Loading timeout - auto-hiding overlay');
+          return { visible: false, progress: 100, message: 'Loaded' };
+        }
+        return prev;
+      });
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (!eventBus) return;
 
